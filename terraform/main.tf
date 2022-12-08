@@ -1,20 +1,7 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = "ap-southeast-1"
-}
-
 resource "aws_instance" "ec2_instance" {
 
-  ami           = "ami-0af2f764c580cc1f9"
-  instance_type = "t2.micro"
+  ami           = data.aws_ami.amazon_linux.id
+  instance_type = var.instance_type
   key_name      = aws_key_pair.ssh_key.key_name
 
   tags = {
@@ -28,6 +15,16 @@ resource "aws_instance" "ec2_instance" {
 resource "aws_eip" "lb" {
   instance = aws_instance.ec2_instance.id
   vpc      = true
+}
+
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-kernel-*-x86_64-gp2"]
+  }
 }
 
 resource "aws_security_group" "main_sg" {

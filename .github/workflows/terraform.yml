@@ -16,7 +16,7 @@ jobs:
         terraform_version: 1.3.6
 
     - name: cd into terraform folder
-      run: cd terraform
+      run: cd $HOME/work/tatwritescode/tatwritescode/terraform
 
     - name: terraform init
       run: terraform init

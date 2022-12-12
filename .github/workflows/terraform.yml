@@ -1,0 +1,20 @@
+name: Terraform validator and planner
+
+on:
+  push:
+    branches: 
+      - master 
+    pull_request: 
+
+jobs:
+  init:
+    runs-on: hashicorp/terraform:latest
+    steps:
+    - name: terraform init
+      run: terraform init
+    
+    - name: terraform validate
+      run: terraform validate
+    
+    - name: terraform plan
+      run: terraform plan

@@ -45,7 +45,7 @@
         --bs-danger: #dc3545;
         --bs-light: #f8f9fa;
         --bs-dark: #212529;
-        --bs-primary-rgb: 189, 93, 56;
+        --bs-primary-rgb: 189, 56, 93;
         --bs-secondary-rgb: 108, 117, 125;
         --bs-success-rgb: 25, 135, 84;
         --bs-info-rgb: 13, 202, 240;
@@ -11419,11 +11419,26 @@
         margin-right: 0;
         }
         .social-icons .social-icon:hover {
-        background-color: #A98B98;
+        background-color: #BD385D;
         }
 
         .dev-icons {
         font-size: 3rem;
+        }
+
+        #exp-list>li {
+            margin-top: 25px;
+
+            -webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
+            -moz-animation: fadein 1s; /* Firefox < 16 */
+                -ms-animation: fadein 1s; /* Internet Explorer */
+                -o-animation: fadein 1s; /* Opera < 12.1 */
+                    animation: fadein 1s;
+        }
+
+        @keyframes fadein {
+            from { opacity: 0; }
+            to   { opacity: 1; }
         }
 
         section.resume-section {

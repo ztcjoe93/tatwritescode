@@ -6,7 +6,6 @@ COPY go.mod ./
 RUN go mod download
 
 COPY assets ./assets
-COPY css ./css
 COPY templates ./templates
 
 COPY *.go ./

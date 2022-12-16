@@ -73,7 +73,6 @@ func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
 
-	router.Static("/css", "./css/")
 	router.Static("/js", "./js/")
 	router.Static("/assets", "./assets/")
 

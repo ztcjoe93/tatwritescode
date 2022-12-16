@@ -1,10 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v2"
@@ -19,10 +21,19 @@ var (
 
 func main() {
 
-	// db, err := sql.Open("mysql", "username:password@tcp(localhost:3306)/db_name")
-	// if err != nil {
-	// 	fmt.Printf("Error connecting to db: %v\n", err)
-	// }
+	dbUser := os.Getenv("MYSQL_USER")
+	dbPassword := os.Getenv("MYSQL_PASSWORD")
+	dbName := os.Getenv("MYSQL_DATABASE")
+	dbHost := os.Getenv("MYSQL_HOST")
+
+	if dbHost == "" {
+		dbHost = "localhost"
+	}
+
+	_, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", dbUser, dbPassword, dbHost, dbName))
+	if err != nil {
+		fmt.Printf("Error connecting to db: %v\n", err)
+	}
 
 	// rows, err := db.Query("SELECT * FROM about")
 	// if err != nil {
@@ -96,8 +107,8 @@ func main() {
 		c.HTML(http.StatusOK, "skills.tmpl", headers)
 	})
 
-	router.GET("/interests", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "interests.tmpl", headers)
+	router.GET("/projects", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "projects.tmpl", headers)
 	})
 
 	router.GET("/blog", func(c *gin.Context) {

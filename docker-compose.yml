@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  twc-app:
+    build: .
+    image: ztcjoe93/twc-app
+    container_name: twc-app
+    ports:
+      - "8080:8080"

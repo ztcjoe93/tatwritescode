@@ -1,8 +1,38 @@
 version: "3.9"
 services:
+
   twc-app:
-    build: .
-    image: ztcjoe93/twc-app
+    build: 
+      context: ./
+      dockerfile: ./docker/twc-app/Dockerfile
     container_name: twc-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    image: ztcjoe93/twc-app
     ports:
       - "8080:8080"
+
+  db:
+    image: mysql/mysql-server:latest
+    build:
+      context: ./
+      dockerfile: ./docker/db/Dockerfile
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      timeout: 10s
+      retries: 10
+    ports:
+      - "3306:3306"
+    restart: on-failure

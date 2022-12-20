@@ -23,3 +23,13 @@ variable "database_root_password" {
   type        = string
   description = "Password for root database user"
 }
+
+variable "ssl_pem" {
+  type        = string
+  description = "Public key for SSL cert"
+}
+
+variable "ssl_key" {
+  type        = string
+  description = "Private key for SSL cert"
+}

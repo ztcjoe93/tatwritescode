@@ -14,8 +14,7 @@ server {
 }
 
 server {
-    listen              443;
-    ssl                 on;
+    listen              443 ssl;
     ssl_certificate     /etc/ssl/tatwritescode.com.pem;
     ssl_certificate_key /etc/ssl/tatwritescode.com.key;
 

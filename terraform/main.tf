@@ -13,13 +13,15 @@ resource "aws_instance" "ec2_instance" {
     MYSQL_USER          = var.database_user
     MYSQL_PASSWORD      = var.database_password
     MYSQL_ROOT_PASSWORD = var.database_root_password
+    SSL_PEM             = var.ssl_pem
+    SSL_KEY             = var.ssl_key
   })
   vpc_security_group_ids = [aws_security_group.main_sg.id]
 }
 
-resource "aws_eip" "lb" {
-  instance = aws_instance.ec2_instance.id
-  vpc      = true
+resource "aws_eip_association" "main_eip_association" {
+  instance_id   = aws_instance.ec2_instance.id
+  allocation_id = data.aws_eip.eip.id
 }
 
 data "aws_ami" "amazon_linux" {
@@ -29,6 +31,12 @@ data "aws_ami" "amazon_linux" {
   filter {
     name   = "name"
     values = ["amzn2-ami-kernel-*-x86_64-gp2"]
+  }
+}
+
+data "aws_eip" "eip" {
+  tags = {
+    Name = "Main EIP"
   }
 }
 

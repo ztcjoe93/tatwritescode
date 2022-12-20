@@ -38,6 +38,7 @@ jobs:
         database_user = "${{ secrets.DATABASE_USER }}"
         database_password = "${{ secrets.DATABASE_PASSWORD }}"
         database_root_password = "${{ secrets.DATABASE_ROOT_PASSWORD }}"
+        volume_mount_path = "${{ secrets.VOLUME_MOUNT_PATH }}"
         ssl_pem = "${{ secrets.SSL_PEM }}"
         ssl_key = "${{ secrets.SSL_KEY }}"
         EOF

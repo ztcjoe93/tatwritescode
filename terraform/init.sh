@@ -50,17 +50,25 @@ chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 sudo service docker start
 
 # spinning up twc-app container and mysql container
-git clone https://github.com/ztcjoe93/tatwritescode.git /home/ec2-user/tatwritescode
+sudo git clone https://github.com/ztcjoe93/tatwritescode.git /opt/tatwritescode
 
-# pass terraform variables to populate within .env file
-cat <<EOT >> /home/ec2-user/tatwritescode/.env
+# pass terraform variables to populate within .env file for docker-compose
+sudo cat <<EOT >> /opt/tatwritescode/.env
 MYSQL_DATABASE=${MYSQL_DATABASE}
 MYSQL_USER=${MYSQL_USER}
 MYSQL_PASSWORD=${MYSQL_PASSWORD}
 MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+VOLUME_MOUNT_PATH=${VOLUME_MOUNT_PATH}
 EOT
 
-cd /home/ec2-user/tatwritescode
+# mkfs does not reformat the volume unless -f is passed in
+sudo mkfs -t xfs /dev/xvdh
+sudo mkdir -p /opt/tatwritescode/volume
+sudo mount /dev/xvdh /opt/tatwritescode/volume
+
+sudo mkdir /opt/tatwritescode/volume/database
+
+cd /opt/tatwritescode
 docker compose up -d
 
 sudo systemctl start nginx.service

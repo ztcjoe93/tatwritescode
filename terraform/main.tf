@@ -13,6 +13,7 @@ resource "aws_instance" "ec2_instance" {
     MYSQL_USER          = var.database_user
     MYSQL_PASSWORD      = var.database_password
     MYSQL_ROOT_PASSWORD = var.database_root_password
+    VOLUME_MOUNT_PATH   = var.volume_mount_path
     SSL_PEM             = var.ssl_pem
     SSL_KEY             = var.ssl_key
   })
@@ -24,6 +25,15 @@ resource "aws_eip_association" "main_eip_association" {
   allocation_id = data.aws_eip.eip.id
 }
 
+resource "aws_volume_attachment" "ebs_attachment" {
+  device_name = "/dev/sdh"
+  volume_id   = data.aws_ebs_volume.ebs_volume.id
+  instance_id = aws_instance.ec2_instance.id
+
+  stop_instance_before_detaching = true
+}
+
+
 data "aws_ami" "amazon_linux" {
   most_recent = true
   owners      = ["amazon"]
@@ -34,9 +44,23 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
+data "aws_ebs_volume" "ebs_volume" {
+  most_recent = true
+
+  filter {
+    name   = "volume-type"
+    values = ["gp3"]
+  }
+
+  filter {
+    name   = "tag:Name"
+    values = ["twc-main-ebs-1a"]
+  }
+}
+
 data "aws_eip" "eip" {
   tags = {
-    Name = "Main EIP"
+    Name = "twc-main-eip"
   }
 }
 

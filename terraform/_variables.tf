@@ -24,6 +24,11 @@ variable "database_root_password" {
   description = "Password for root database user"
 }
 
+variable "volume_mount_path" {
+  type        = string
+  description = "Path for database container's volume"
+}
+
 variable "ssl_pem" {
   type        = string
   description = "Public key for SSL cert"

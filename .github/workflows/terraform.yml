@@ -1,4 +1,4 @@
-name: Terraform validator and planner
+name: Validate terraform
 
 on:
   push:
@@ -30,6 +30,13 @@ jobs:
         terraform_version: 1.3.6
 
     - name: Terraform configurations and validation
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        database_user: ${{ secrets.DATABASE_USER }}
+        database_password: ${{ secrets.DATABASE_PASSWORD }}
+        database_root_password: ${{ secrets.DATABASE_ROOT_PASSWORD }}
+        ssl_pem: ${{ secrets.SSL_PEM }}
+        ssl_key: ${{ secrets.SSL_KEY }}
       working-directory: ./terraform
       run: |
         terraform init

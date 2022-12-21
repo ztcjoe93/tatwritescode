@@ -1,3 +1,4 @@
+![](assets/twc.png)
 # Tat's micro-blog playground
 This repository serves as a micro-blog and testbed meant for trying out new software and programming paradigms.  
 

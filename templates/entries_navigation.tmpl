@@ -10,7 +10,8 @@
                     <details><summary class="text-sm-start" id="blogposts">{{ $year }}</summary>
                     <ul>
                     {{ range $x := (index $.links.YearLinks $idx).MonthOrder }}
-                        <li class="nav-item text-sm-start" id="blogposts"><a class="nav-link" id="blogposts-month" href="">{{ $x }}</a></li>
+                        <li class="nav-item text-sm-start" id="blogposts"><a class="nav-link" id="blogposts-month" 
+                            href="{{ $.baseUrl }}/{{ $year }}/{{ monthIntRepr $x }}">{{ $x }}</a></li>
                     {{ end }}
                     </ul>
                     </details>

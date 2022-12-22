@@ -5,15 +5,17 @@
     </div>
     <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav">
-            {{ range .links }}
-            <li class="nav-item"><a class="nav-link" href="">{{ . }}</a></li>
+            {{ range $idx, $year := .links.YearOrder }}
+                <li class="nav-item">
+                    <details><summary class="text-sm-start" id="blogposts">{{ $year }}</summary>
+                    <ul>
+                    {{ range $x := (index $.links.YearLinks $idx).MonthOrder }}
+                        <li class="nav-item text-sm-start" id="blogposts"><a class="nav-link" id="blogposts-month" href="">{{ $x }}</a></li>
+                    {{ end }}
+                    </ul>
+                    </details>
+                </li>
             {{ end }}
-            <li class="nav-item"><a class="nav-link" href="">dummy_link</a></li>
-            <li class="nav-item"><a class="nav-link" href="">dummy_link2</a></li>
-            <li class="nav-item"><a class="nav-link" href="">dummy_link3</a></li>
-            <li class="nav-item"><a class="nav-link" href="">dummy_link4</a></li>
-            <li class="nav-item"><a class="nav-link" href="">dummy_link5</a></li>
-            <li class="nav-item"><a class="nav-link" href="">dummy_link6</a></li>
         </ul>
     </div>
     <a class="navbar-brand nav-link" id="side-portfolio-link" href="/">Portfolio</a>

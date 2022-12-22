@@ -2,11 +2,12 @@ FROM golang:1.19.3-alpine
 
 WORKDIR /twc-app
 
-COPY go.mod ./
-RUN go mod download
-
+COPY internal ./internal
 COPY assets ./assets
 COPY templates ./templates
+
+COPY go.mod ./
+RUN go mod download
 
 COPY *.go ./
 

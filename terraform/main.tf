@@ -1,8 +1,9 @@
 resource "aws_instance" "ec2_instance" {
 
-  ami           = data.aws_ami.amazon_linux.id
-  instance_type = var.instance_type
-  key_name      = aws_key_pair.ssh_key.key_name
+  ami               = data.aws_ami.amazon_linux.id
+  availability_zone = local.availability_zone
+  instance_type     = var.instance_type
+  key_name          = aws_key_pair.ssh_key.key_name
 
   tags = {
     name = "main-server"

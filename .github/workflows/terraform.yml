@@ -36,6 +36,7 @@ jobs:
       run: |
         cat > terraform.tfvars <<EOF
         database_user = "${{ secrets.DATABASE_USER }}"
+        database_host = "${{ secrets.DATABASE_HOST }}"
         database_password = "${{ secrets.DATABASE_PASSWORD }}"
         database_root_password = "${{ secrets.DATABASE_ROOT_PASSWORD }}"
         volume_mount_path = "${{ secrets.VOLUME_MOUNT_PATH }}"

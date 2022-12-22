@@ -3,23 +3,36 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"html/template"
+	"internal/database"
+	"internal/posts"
+	"internal/utilities"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v2"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 var (
-	env     string
-	headers gin.H = gin.H{}
+	env       string
+	headers   gin.H = gin.H{}
+	db        *sql.DB
+	blogposts []*posts.Blogpost
 )
 
 func main() {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
 	dbUser := os.Getenv("MYSQL_USER")
 	dbPassword := os.Getenv("MYSQL_PASSWORD")
@@ -30,28 +43,8 @@ func main() {
 		dbHost = "localhost"
 	}
 
-	_, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", dbUser, dbPassword, dbHost, dbName))
-	if err != nil {
-		fmt.Printf("Error connecting to db: %v\n", err)
-	}
-
-	// rows, err := db.Query("SELECT * FROM about")
-	// if err != nil {
-	// 	fmt.Printf("some error -> %v\n", err)
-	// }
-	// defer rows.Close()
-
-	// for rows.Next() {
-	// 	var output string
-
-	// 	err := rows.Scan(&output)
-	// 	if err != nil {
-	// 		fmt.Printf("some error -> %v\n", err)
-	// 	}
-
-	// 	fmt.Printf("Value retrieved from db -> %v\n", output)
-
-	// }
+	db := database.OpenSqlConnection(dbUser, dbPassword, dbName, dbHost)
+	blogposts = database.GetAllBlogposts(db)
 
 	config := make(map[interface{}]interface{})
 	yamlFile, err := ioutil.ReadFile("config.yaml")
@@ -82,6 +75,12 @@ func main() {
 	fmt.Printf("Currently in %v environment\n", env)
 
 	router := gin.Default()
+
+	funcMap := template.FuncMap{
+		"monthIntRepr": utilities.ConvertMonthToIntRepr,
+	}
+	router.SetFuncMap(funcMap)
+
 	router.LoadHTMLGlob("templates/*")
 
 	router.Static("/js", "./js/")
@@ -112,7 +111,26 @@ func main() {
 	})
 
 	router.GET("/blog", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "blog.tmpl", headers)
+		latestPosts := database.GetLatestPosts(db)
+
+		c.HTML(http.StatusOK, "blog.tmpl", gin.H{
+			"posts":   latestPosts,
+			"links":   posts.GetNavigationLinks(blogposts),
+			"baseUrl": getBaseURL(c),
+		})
+	})
+
+	router.GET("/blog/:year/:month", func(c *gin.Context) {
+		year := c.Param("year")
+		month := c.Param("month")
+
+		specificPosts, _ := database.GetPostsFromMonth(db, year, month)
+
+		c.HTML(http.StatusOK, "blog.tmpl", gin.H{
+			"posts":   specificPosts,
+			"links":   posts.GetNavigationLinks(blogposts),
+			"baseUrl": getBaseURL(c, true),
+		})
 	})
 
 	router.GET("/resume", func(c *gin.Context) {
@@ -133,4 +151,21 @@ func modH(args map[string]string) gin.H {
 	}
 
 	return header
+}
+
+func getBaseURL(c *gin.Context, additionalParams ...bool) string {
+	scheme := "http"
+
+	if c.Request.TLS != nil {
+		scheme = "https"
+	}
+
+	urlPath := c.Request.URL.Path
+	if len(additionalParams) > 0 {
+		arguments := strings.Split(c.Request.URL.Path, "/")
+		fmt.Printf("%v\n", arguments)
+		urlPath = "/" + arguments[1]
+	}
+
+	return scheme + "://" + c.Request.Host + urlPath
 }

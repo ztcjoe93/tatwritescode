@@ -1,11 +1,20 @@
-{{ template "base" }}
-{{ template "navigation" }}
+{{ template "blog_base" }}
+{{ template "blog_navigation" }}
+{{ template "entries_navigation" . }}
 <div class="container-fluid p-0">
-    <section class="resume-section" id="about">
+    <section class="resume-section">
         <div class="resume-section-content">
-            <div class="subheading mb-5">
-                Under development
+            <h2 class="mb-5">Posts</h2>
+            {{ range .posts }}
+            <h3 class="mt-3">{{ .Title }}</h3>
+            <div class="subheading mb-2">
+                {{ .Datetime }}
             </div>
+            <p>
+                {{ .Content }}
+            </p>
+            <hr/>
+            {{ end }}
         </div>
     </section>
 </div>

@@ -1,4 +1,4 @@
-{{ define "base" }}
+{{ define "blog_base" }}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -67,6 +67,7 @@
         --bs-body-bg: #fff;
         --gh-link: 0, 109, 50;
         --zt-nav-primary: 34, 40, 49;
+        --zt-nav-secondary: 80, 87, 98;
         --zt-body-bg: #393E46;
         --zt-body-color: #FFFFFF;
         }
@@ -7826,9 +7827,27 @@
         --bs-text-opacity: 1;
         }
 
+        #portfolio-link:hover {
+        color: #D46E8A;
+        }
+
         .bg-primary {
         --bs-bg-opacity: 1;
         background-color: rgba(var(--zt-nav-primary), var(--bs-bg-opacity)) !important;
+        }
+
+        @media (min-width: 992px) {
+        .bg-nav-primary {
+        --bs-bg-opacity: 1;
+        background-color: rgba(var(--zt-nav-secondary), var(--bs-bg-opacity)) !important;
+        }
+        }
+
+        @media (max-width: 992px) {
+        .bg-nav-primary {
+        --bs-bg-opacity: 1;
+        background-color: rgba(var(--zt-nav-primary), var(--bs-bg-opacity)) !important;
+        }
         }
 
         .bg-secondary {
@@ -11348,6 +11367,12 @@
         font-size: 1.5rem;
         }
 
+        @media (min-width: 992px) {
+        #topNav {
+        z-index: 5000;
+        }
+        }
+
         #sideNav {
         padding-left: 1rem;
         padding-right: 1rem;
@@ -11359,6 +11384,12 @@
         }
         #sideNav .navbar-toggler:focus {
         outline-color: #d48a6e;
+        }
+
+        @media (min-width: 992px) {
+        #sideNav #side-portfolio-link {
+        display: none;
+        }
         }
 
         @media (min-width: 992px) {
@@ -11464,6 +11495,12 @@
             padding-right: 3rem;
             padding-top: 5rem;
             padding-bottom: 5rem;
+        }
+        }
+
+        @media min-width: 992px) {
+        #side-portfolio-link {
+            display: none;
         }
         }
     </style>

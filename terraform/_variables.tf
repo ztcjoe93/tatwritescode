@@ -15,6 +15,11 @@ variable "database_user" {
   description = "Name of database"
 }
 
+variable "database_host" {
+  type        = string
+  description = "Host name of database (container)"
+}
+
 variable "database_password" {
   type        = string
   description = "Password for database_user"

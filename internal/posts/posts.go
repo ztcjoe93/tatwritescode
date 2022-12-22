@@ -54,10 +54,6 @@ func GetNavigationLinks(posts []*Blogpost) *NavigationLinks {
 		count++
 	}
 
-	for _, x := range yearLinks {
-		fmt.Printf("%v, %v\n", x.Year, x.MonthOrder)
-	}
-
 	return &NavigationLinks{
 		YearLinks: yearLinks,
 		YearOrder: yearOrder,

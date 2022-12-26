@@ -7,24 +7,25 @@ import (
 	"internal/database"
 	"internal/posts"
 	"internal/utilities"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"gopkg.in/yaml.v2"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 var (
-	env       string
-	headers   gin.H = gin.H{}
-	db        *sql.DB
-	blogposts []*posts.Blogpost
+	env         string
+	headers     gin.H  = gin.H{}
+	identityKey string = "id"
+	db          *sql.DB
+	blogposts   []*posts.Blogpost
 )
 
 func main() {
@@ -38,30 +39,15 @@ func main() {
 	dbPassword := os.Getenv("MYSQL_PASSWORD")
 	dbName := os.Getenv("MYSQL_DATABASE")
 	dbHost := os.Getenv("MYSQL_HOST")
+	env = os.Getenv("ENV")
 
-	if dbHost == "" {
+	if env == "" {
 		dbHost = "localhost"
+		env = "dev"
 	}
 
 	db := database.OpenSqlConnection(dbUser, dbPassword, dbName, dbHost)
 	blogposts = database.GetAllBlogposts(db)
-
-	config := make(map[interface{}]interface{})
-	yamlFile, err := ioutil.ReadFile("config.yaml")
-	if err != nil {
-		log.Printf("Error reading yaml file: %v\n", err)
-	}
-
-	err = yaml.Unmarshal(yamlFile, config)
-	if err != nil {
-		log.Printf("Unable to unmarshal config.yaml: %v\n", err)
-	}
-
-	if _, ok := config["env"]; ok {
-		env = config["env"].(string)
-	} else {
-		env = "dev"
-	}
 
 	// For Cache-Control: "no-cache" when running on development so that
 	// we don't get a mysterious 'why isn't my assets updating' situation
@@ -72,12 +58,11 @@ func main() {
 		headers = gin.H{}
 	}
 
-	fmt.Printf("Currently in %v environment\n", env)
-
-	router := gin.Default()
+	router := gin.New()
 
 	funcMap := template.FuncMap{
 		"monthIntRepr": utilities.ConvertMonthToIntRepr,
+		"renderAsHTML": utilities.RenderAsHTML,
 	}
 	router.SetFuncMap(funcMap)
 
@@ -85,6 +70,103 @@ func main() {
 
 	router.Static("/js", "./js/")
 	router.Static("/assets", "./assets/")
+
+	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
+		SendCookie:     true,
+		SecureCookie:   env == "prod", //non HTTPS dev environments
+		CookieHTTPOnly: true,          // JS can't modify
+		CookieName:     "token",       // default jwt
+		TokenLookup:    "cookie:token",
+		CookieSameSite: http.SameSiteDefaultMode, //SameSiteDefaultMode, SameSiteLaxMode, SameSiteStrictMode, SameSiteNoneMode
+		Realm:          "TATWRITESCODE.COM",
+		Key:            []byte(os.Getenv("SIGNATURE_KEY")),
+		Timeout:        time.Hour,
+		MaxRefresh:     time.Hour,
+		IdentityKey:    identityKey,
+		PayloadFunc: func(data interface{}) jwt.MapClaims {
+			if v, ok := data.(*User); ok {
+				return jwt.MapClaims{
+					identityKey: v.UserName,
+				}
+			}
+			return jwt.MapClaims{}
+		},
+		IdentityHandler: func(c *gin.Context) interface{} {
+			claims := jwt.ExtractClaims(c)
+			return &User{
+				UserName: claims[identityKey].(string),
+			}
+		},
+		Authenticator: func(c *gin.Context) (interface{}, error) {
+			var loginVals login
+			if err := c.ShouldBind(&loginVals); err != nil {
+				return "", jwt.ErrMissingLoginValues
+			}
+			username := loginVals.Username
+			password := loginVals.Password
+
+			hashedPassword := database.GetHashedPassword(db, username)
+			fmt.Printf("checkpass = %v\n", utilities.CheckPasswordHash(password, hashedPassword))
+
+			if utilities.CheckPasswordHash(password, hashedPassword) {
+				return &User{
+					UserName: username,
+				}, nil
+			}
+
+			return nil, jwt.ErrFailedAuthentication
+		},
+		Authorizator: func(data interface{}, c *gin.Context) bool {
+			if _, ok := data.(*User); ok {
+				fmt.Printf("Data = %v, ok = %v\n", data, ok)
+				return true
+			}
+			return false
+		},
+		LoginResponse: func(c *gin.Context, code int, message string, time time.Time) {
+			c.Redirect(http.StatusFound, "/admin/home")
+		},
+		LogoutResponse: func(c *gin.Context, code int) {
+			c.Redirect(http.StatusFound, "/")
+		},
+		Unauthorized: func(c *gin.Context, code int, message string) {
+			c.JSON(code, gin.H{
+				"code":    code,
+				"message": message,
+			})
+		},
+		// TokenLookup is a string in the form of "<source>:<name>" that is used
+		// to extract token from the request.
+		// Optional. Default value "header:Authorization".
+		// Possible values:
+		// - "header:<name>"
+		// - "query:<name>"
+		// - "cookie:<name>"
+		// - "param:<name>"
+		// TokenLookup: "header: Authorization, query: token, cookie: jwt",
+		// TokenLookup: "query:token",
+		// TokenLookup: "cookie:token",
+
+		// TokenHeadName is a string in the header. Default value is "Bearer"
+		TokenHeadName: "Bearer",
+
+		// TimeFunc provides the current time. You can override it to use another time value. This is useful for testing or if your server uses a different time zone than your tokens.
+		TimeFunc: time.Now,
+	})
+	if err != nil {
+		log.Fatal("JWT Error:" + err.Error())
+	}
+
+	// When you use jwt.New(), the function is already automatically called for checking,
+	// which means you don't need to call it again.
+	errInit := authMiddleware.MiddlewareInit()
+
+	if errInit != nil {
+		log.Fatal("authMiddleware.MiddlewareInit() Error:" + errInit.Error())
+	}
+
+	router.POST("/login", authMiddleware.LoginHandler)
+	router.POST("/logout", authMiddleware.LogoutHandler)
 
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "home.tmpl", headers)
@@ -137,6 +219,27 @@ func main() {
 		http.ServeFile(c.Writer, c.Request, "assets/resume.pdf")
 	})
 
+	router.GET("/login", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "login.tmpl", headers)
+	})
+
+	router.GET("/logout", func(c *gin.Context) {
+		authMiddleware.LogoutHandler(c)
+		c.Redirect(http.StatusFound, "/")
+	})
+	auth := router.Group("/admin")
+
+	auth.GET("/refresh_token", authMiddleware.RefreshHandler)
+	auth.Use(authMiddleware.MiddlewareFunc())
+	auth.GET("/home", AuthHandler)
+	auth.POST("/home", func(c *gin.Context) {
+		title := c.PostForm("post_title")
+		post := c.PostForm("post_content")
+
+		database.InsertPost(db, time.Now().UTC().Format("2006-01-02 03:04:05"), title, post)
+		c.Redirect(http.StatusFound, "/admin/home")
+	})
+
 	router.Run(":8080")
 }
 
@@ -168,4 +271,20 @@ func getBaseURL(c *gin.Context, additionalParams ...bool) string {
 	}
 
 	return scheme + "://" + c.Request.Host + urlPath
+}
+
+func AuthHandler(c *gin.Context) {
+	claims := jwt.ExtractClaims(c)
+	// user, _ := c.Get(identityKey)
+	fmt.Printf("%v\n", claims)
+	c.HTML(http.StatusOK, "admin.tmpl", headers)
+}
+
+type User struct {
+	UserName string
+}
+
+type login struct {
+	Username string `form:"username" json:"username" binding:"required"`
+	Password string `form:"password" json:"password" binding:"required"`
 }

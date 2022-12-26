@@ -10,9 +10,9 @@
             <h4 class="lead mb-2">
                 {{ .Datetime }}
             </h4>
-            <p>
-                {{ .Content }}
-            </p>
+            <div>
+                {{ renderAsHTML .Content }}
+            </div>
             <hr/>
             {{ end }}
         </div>

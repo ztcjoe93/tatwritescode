@@ -1,9 +1,11 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"internal/posts"
+	"log"
 	"strconv"
 )
 
@@ -14,6 +16,25 @@ func OpenSqlConnection(user string, password string, database string, host strin
 	}
 
 	return db
+}
+
+func GetHashedPassword(db *sql.DB, username string) string {
+	rows, err := db.Query("SELECT hashed_password FROM users WHERE username = ?", username)
+	if err != nil {
+		fmt.Printf("some error -> %v\n", err)
+	}
+	defer rows.Close()
+
+	var hashed_password string
+	for rows.Next() {
+
+		err := rows.Scan(&hashed_password)
+		if err != nil {
+			fmt.Printf("Some error -> %v\n", err)
+		}
+	}
+
+	return hashed_password
 }
 
 func GetAllBlogposts(db *sql.DB) []*posts.Blogpost {
@@ -40,6 +61,14 @@ func GetAllBlogposts(db *sql.DB) []*posts.Blogpost {
 	}
 
 	return blogPosts
+}
+
+func InsertPost(db *sql.DB, timestamp string, title string, content string) {
+	query := "INSERT INTO posts (datetimestamp, title, content) VALUES (?, ?, ?)"
+	_, err := db.ExecContext(context.Background(), query, timestamp, title, content)
+	if err != nil {
+		log.Printf("Unable to insert into database %s", err)
+	}
 }
 
 func GetLatestPosts(db *sql.DB) []*posts.Blogpost {
@@ -78,7 +107,7 @@ func GetPostsFromMonth(db *sql.DB, year string, month string) ([]*posts.Blogpost
 	fromDate := year + "-" + fmt.Sprintf("%02d", monthInt) + "-" + "01"
 	toDate := strconv.Itoa(ulYear) + "-" + fmt.Sprintf("%02d", ulMonth) + "-" + "01"
 
-	rows, err := db.Query("SELECT * FROM posts WHERE datetimestamp >= ? AND datetimestamp < ?", fromDate, toDate)
+	rows, err := db.Query("SELECT * FROM posts WHERE datetimestamp >= ? AND datetimestamp < ? ORDER BY datetimestamp DESC", fromDate, toDate)
 	if err != nil {
 		fmt.Printf("Some error -> %v\n", err)
 	}

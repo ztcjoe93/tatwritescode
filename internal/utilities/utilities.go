@@ -1,7 +1,10 @@
 package utilities
 
 import (
+	"html/template"
 	"sort"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // sorts a map by its key in lexicographically reverse order
@@ -56,4 +59,18 @@ func ConvertMonthToIntRepr(month string) int {
 	}
 
 	return hm[month]
+}
+
+func RenderAsHTML(htmlString string) template.HTML {
+	return template.HTML(htmlString)
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func CheckPasswordHash(password string, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

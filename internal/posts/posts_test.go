@@ -1,7 +1,6 @@
 package posts
 
 import (
-	"internal/posts"
 	"reflect"
 	"testing"
 
@@ -14,7 +13,7 @@ func TestNewBlogpost(t *testing.T) {
 	var datetime string = "2022-10-10 05:00:25"
 	var title string = "test_title"
 	var content string = "content<br>somestuffhere<br>"
-	var post *posts.Blogpost = posts.NewBlogpost(id, datetime, title, content)
+	var post *Blogpost = NewBlogpost(id, datetime, title, content)
 
 	assert.Equal(t, post.Id, id)
 	assert.Equal(t, post.Datetime, datetime)
@@ -25,7 +24,7 @@ func TestNewBlogpost(t *testing.T) {
 func TestGetMmYyyy(t *testing.T) {
 	blogposts := createBlogposts()
 
-	sideNavEntries := posts.GetMmYyyy(blogposts)
+	sideNavEntries := GetMmYyyy(blogposts)
 
 	expectedNavEntries := map[string]map[string]int{
 		"2018": {"January": 1},
@@ -39,10 +38,10 @@ func TestGetMmYyyy(t *testing.T) {
 func TestGetNavigationLinks(t *testing.T) {
 	blogposts := createBlogposts()
 
-	navigationLinks := posts.GetNavigationLinks(blogposts)
+	navigationLinks := GetNavigationLinks(blogposts)
 
-	expectedNaviLink := posts.NavigationLinks{
-		YearLinks: []*posts.YearLink{
+	expectedNaviLink := NavigationLinks{
+		YearLinks: []*YearLink{
 			{
 				Year:       "2022",
 				MonthOrder: []string{"October", "February"},
@@ -63,15 +62,15 @@ func TestGetNavigationLinks(t *testing.T) {
 	assert.True(t, reflect.DeepEqual(navigationLinks.YearOrder, expectedNaviLink.YearOrder))
 }
 
-func createBlogposts() []*posts.Blogpost {
+func createBlogposts() []*Blogpost {
 	datetimes := []string{
 		"2022-10-10 05:00:25", "2021-12-05 12:00:25", "2018-01-01 03:41:41", "2022-02-10 05:00:25",
 	}
 
-	blogposts := make([]*posts.Blogpost, len(datetimes))
+	blogposts := make([]*Blogpost, len(datetimes))
 
 	for i := 1; i < 5; i++ {
-		blogposts[i-1] = posts.NewBlogpost(i, datetimes[i-1], "test_title", "test_content")
+		blogposts[i-1] = NewBlogpost(i, datetimes[i-1], "test_title", "test_content")
 	}
 
 	return blogposts

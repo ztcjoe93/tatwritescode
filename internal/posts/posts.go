@@ -2,9 +2,10 @@ package posts
 
 import (
 	"fmt"
-	"internal/utilities"
 	"strconv"
 	"time"
+
+	"twc-app/utilities"
 )
 
 type NavigationLinks struct {

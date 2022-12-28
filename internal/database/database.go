@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"internal/posts"
 	"log"
 	"strconv"
+	"twc-app/posts"
 )
 
 func OpenSqlConnection(user string, password string, database string, host string) *sql.DB {

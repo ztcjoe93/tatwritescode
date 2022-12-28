@@ -2,18 +2,18 @@ FROM golang:1.19.3-alpine
 
 WORKDIR /twc-app
 
-COPY internal ./internal
-COPY assets ./assets
-COPY templates ./templates
+COPY ../../internal ./internal
+COPY ../../web/assets ./web/assets
+COPY ../../web/templates ./web/templates
 
-COPY go.mod ./
-RUN go mod download
+COPY cmd/twc-app/go.mod ./cmd/twc-app/go.mod
+RUN cd cmd/twc-app && go mod download
 
-COPY *.go ./
+COPY cmd/twc-app/*.go ./cmd/twc-app
 
-RUN go mod tidy
-RUN go build -o tatwritescode
+RUN cd cmd/twc-app && go mod tidy
+RUN cd cmd/twc-app && go build -o tatwritescode
 
 EXPOSE 8080
 
-CMD ./tatwritescode
+CMD ./cmd/twc-app/tatwritescode

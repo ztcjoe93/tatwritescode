@@ -66,20 +66,24 @@ $ terraform apply -y
 Post-deployment initiliazation script can be found in `/terraform/init.sh`, and output can be found in `/var/log/cloud-init-output.log` in the EC2 instance.
 
 ## Running tests
-To run all tests in the `/test` sub-directory  
+To run all tests  
 ```
-$ go test -v ./test/...
+$ go test -v twc-app/...
 ```
 
 ## Structure
-- `/pkg`, `/internal`, `/assets`, `/templates`, `main.go`  
-Main webserver logic and other modules here
+- `/internal`
+Internal modules that are used by the application
+- `/web`
+Any assets/templates that's required by the core application
+- `/cmd`
+Main application logic and code
 - `/test`  
-Tests for internal/main module here
+Tests for internal/main module
 - `/terraform`  
-IaC related code here
+IaC related code
 - `/docker`  
-Dockerfiles for each container here
+Dockerfiles for each container
 - `.github`  
 Github workflows here
 

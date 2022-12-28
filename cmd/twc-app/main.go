@@ -4,14 +4,14 @@ import (
 	"database/sql"
 	"fmt"
 	"html/template"
-	"internal/database"
-	"internal/posts"
-	"internal/utilities"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+	"twc-app/database"
+	"twc-app/posts"
+	"twc-app/utilities"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
@@ -66,10 +66,9 @@ func main() {
 	}
 	router.SetFuncMap(funcMap)
 
-	router.LoadHTMLGlob("templates/*")
+	router.LoadHTMLGlob("web/templates/*")
 
-	router.Static("/js", "./js/")
-	router.Static("/assets", "./assets/")
+	router.Static("/assets", "web/assets/")
 
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		SendCookie:     true,
@@ -216,7 +215,7 @@ func main() {
 	})
 
 	router.GET("/resume", func(c *gin.Context) {
-		http.ServeFile(c.Writer, c.Request, "assets/resume.pdf")
+		http.ServeFile(c.Writer, c.Request, "../../web/assets/resume.pdf")
 	})
 
 	router.GET("/login", func(c *gin.Context) {

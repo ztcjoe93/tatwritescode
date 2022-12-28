@@ -25,11 +25,10 @@ jobs:
       run: pwd
 
     - name: Run tests and coverage
-      run: cd cmd/twc-app && go test -race -coverprofile=coverage.out -covermode=atomic -v ./...
+      run: cd cmd/twc-app && go test -race -coverprofile=${{github.workspace}}/coverage.out -covermode=atomic -v ./...
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        directory: ./cmd/twc-app/
         verbose: true

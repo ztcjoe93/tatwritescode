@@ -19,7 +19,7 @@ jobs:
         go-version: 1.19.3
 
     - name: Build
-      run: cd cmd/twc-app && go mod tidy && go mod init && go build -v .
+      run: cd cmd/twc-app && go mod tidy && go mod download && go build -v .
 
     - name: Run tests and coverage
       run: go test -race -coverprofile=coverage.out -covermode=atomic -v twc-app/...

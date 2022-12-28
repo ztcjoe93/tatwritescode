@@ -22,7 +22,7 @@ jobs:
       run: cd cmd/twc-app && go mod tidy && go build -v .
 
     - name: Run tests and coverage
-      run: go test -race -coverprofile=coverage.out -covermode=atomic -v twc-app/...
+      run: go mod init && go test -race -coverprofile=coverage.out -covermode=atomic -v twc-app/...
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3

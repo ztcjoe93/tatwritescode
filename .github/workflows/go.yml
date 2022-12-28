@@ -20,11 +20,14 @@ jobs:
 
     - name: Build
       run: cd cmd/twc-app && go mod tidy && go mod download && go build -v .
+    
+    - name: Check available packages
+      run: go list .../...
 
-    - name: Run tests and coverage
-      run: go list && go test -race -coverprofile=coverage.out -covermode=atomic -v twc-app/...
+    # - name: Run tests and coverage
+    #   run: go test -race -coverprofile=coverage.out -covermode=atomic -v twc-app/...
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+    # - name: Upload coverage to Codecov
+    #   uses: codecov/codecov-action@v3
+    #   with:
+    #     token: ${{ secrets.CODECOV_TOKEN }}

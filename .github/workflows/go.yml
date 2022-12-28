@@ -19,10 +19,10 @@ jobs:
         go-version: 1.19.3
 
     - name: Build
-      run: cd cmd/twc-app && go build -v .
+      run: cd cmd/twc-app && go build -v . && go mod tidy
 
     - name: Run tests and coverage
-      run: go test -race -coverprofile=coverage.out -covermode=atomic -v twc-app/...
+      run: cd / && go test -race -coverprofile=coverage.out -covermode=atomic -v twc-app/...
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3

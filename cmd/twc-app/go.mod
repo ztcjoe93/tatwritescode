@@ -36,7 +36,7 @@ require (
 )
 
 replace (
-	twc-app/database => ../../internal/database
-	twc-app/posts => ../../internal/posts
-	twc-app/utilities => ../../internal/utilities
+	twc-app/database => ./internal/database
+	twc-app/posts => ./internal/posts
+	twc-app/utilities => ./internal/utilities
 )

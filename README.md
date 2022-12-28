@@ -1,3 +1,6 @@
+![](https://github.com/ztcjoe93/tatwritescode/actions/workflows/terraform.yml/badge.svg?branch=master)
+![](https://img.shields.io/github/go-mod/go-version/ztcjoe93/tatwritescode)
+
 ![](assets/twc.png)
 # Tat's micro-blog playground
 This repository serves as a micro-blog and testbed meant for trying out new software and programming paradigms.  

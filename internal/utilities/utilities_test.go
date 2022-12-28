@@ -70,13 +70,7 @@ func TestHashPasswordAndCheckHash(t *testing.T) {
 	hash, _ := HashPassword(rawPassword)
 
 	var matches bool = CheckPasswordHash(rawPassword, hash)
+	var notMatches bool = CheckPasswordHash("passw0rd1234", hash)
 	assert.True(t, matches)
-}
-
-func TestHashPasswordAndCheckHashFails(t *testing.T) {
-	var rawPassword string = "passw0rd123"
-	hash, _ := HashPassword(rawPassword)
-
-	var matches bool = CheckPasswordHash("passw0rd1234", hash)
-	assert.False(t, matches)
+	assert.False(t, notMatches)
 }

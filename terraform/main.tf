@@ -20,7 +20,7 @@ resource "aws_instance" "ec2_instance" {
     SSL_PEM             = var.ssl_pem
     SSL_KEY             = var.ssl_key
     SIGNATURE_KEY       = var.signature_key
-    env                 = "prod"
+    ENV                 = "prod"
   })
   vpc_security_group_ids = [aws_security_group.main_sg.id]
 }

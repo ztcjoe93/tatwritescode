@@ -1,7 +1,8 @@
 ![](https://github.com/ztcjoe93/tatwritescode/actions/workflows/terraform.yml/badge.svg?branch=master)
-![](https://img.shields.io/github/go-mod/go-version/ztcjoe93/tatwritescode)
+![](https://github.com/ztcjoe93/tatwritescode/actions/workflows/go.yml/badge.svg?branch=master)
+![](https://img.shields.io/github/go-mod/go-version/ztcjoe93/tatwritescode?filename=cmd%2Ftwc-app%2Fgo.mod)
 
-![](assets/twc.png)
+![](web/assets/twc.png)
 # Tat's micro-blog playground
 This repository serves as a micro-blog and testbed meant for trying out new software and programming paradigms.  
 
@@ -72,8 +73,6 @@ $ go test -v twc-app/...
 ```
 
 ## Structure
-- `/internal`
-Internal modules that are used by the application
 - `/web`
 Any assets/templates that's required by the core application
 - `/cmd`

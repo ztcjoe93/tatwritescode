@@ -25,7 +25,7 @@ jobs:
       run: pwd
 
     - name: Run tests and coverage
-      run: go test -race -coverprofile=coverage.out -covermode=atomic -v ./cmd/twc-app/...
+      run: cd cmd/twc-app && go test -race -coverprofile=coverage.out -covermode=atomic -v ./...
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3

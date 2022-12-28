@@ -9,9 +9,6 @@ import (
 	"os"
 	"strings"
 	"time"
-	"twc-app/database"
-	"twc-app/posts"
-	"twc-app/utilities"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
@@ -25,7 +22,7 @@ var (
 	headers     gin.H  = gin.H{}
 	identityKey string = "id"
 	db          *sql.DB
-	blogposts   []*posts.Blogpost
+	blogposts   []*Blogpost
 )
 
 func main() {
@@ -46,8 +43,8 @@ func main() {
 		env = "dev"
 	}
 
-	db := database.OpenSqlConnection(dbUser, dbPassword, dbName, dbHost)
-	blogposts = database.GetAllBlogposts(db)
+	db := OpenSqlConnection(dbUser, dbPassword, dbName, dbHost)
+	blogposts = GetAllBlogposts(db)
 
 	// For Cache-Control: "no-cache" when running on development so that
 	// we don't get a mysterious 'why isn't my assets updating' situation
@@ -61,8 +58,8 @@ func main() {
 	router := gin.New()
 
 	funcMap := template.FuncMap{
-		"monthIntRepr": utilities.ConvertMonthToIntRepr,
-		"renderAsHTML": utilities.RenderAsHTML,
+		"monthIntRepr": ConvertMonthToIntRepr,
+		"renderAsHTML": RenderAsHTML,
 	}
 	router.SetFuncMap(funcMap)
 
@@ -105,10 +102,10 @@ func main() {
 			username := loginVals.Username
 			password := loginVals.Password
 
-			hashedPassword := database.GetHashedPassword(db, username)
-			fmt.Printf("checkpass = %v\n", utilities.CheckPasswordHash(password, hashedPassword))
+			hashedPassword := GetHashedPassword(db, username)
+			fmt.Printf("checkpass = %v\n", CheckPasswordHash(password, hashedPassword))
 
-			if utilities.CheckPasswordHash(password, hashedPassword) {
+			if CheckPasswordHash(password, hashedPassword) {
 				return &User{
 					UserName: username,
 				}, nil
@@ -193,11 +190,11 @@ func main() {
 	})
 
 	router.GET("/blog", func(c *gin.Context) {
-		latestPosts := database.GetLatestPosts(db)
+		latestPosts := GetLatestPosts(db)
 
 		c.HTML(http.StatusOK, "blog.tmpl", gin.H{
 			"posts":   latestPosts,
-			"links":   posts.GetNavigationLinks(blogposts),
+			"links":   GetNavigationLinks(blogposts),
 			"baseUrl": getBaseURL(c),
 		})
 	})
@@ -206,11 +203,11 @@ func main() {
 		year := c.Param("year")
 		month := c.Param("month")
 
-		specificPosts, _ := database.GetPostsFromMonth(db, year, month)
+		specificPosts, _ := GetPostsFromMonth(db, year, month)
 
 		c.HTML(http.StatusOK, "blog.tmpl", gin.H{
 			"posts":   specificPosts,
-			"links":   posts.GetNavigationLinks(blogposts),
+			"links":   GetNavigationLinks(blogposts),
 			"baseUrl": getBaseURL(c, true),
 		})
 	})
@@ -236,7 +233,7 @@ func main() {
 		title := c.PostForm("post_title")
 		post := c.PostForm("post_content")
 
-		database.InsertPost(db, time.Now().UTC().Format("2006-01-02 03:04:05"), title, post)
+		InsertPost(db, time.Now().UTC().Format("2006-01-02 03:04:05"), title, post)
 		c.Redirect(http.StatusFound, "/admin/home")
 	})
 

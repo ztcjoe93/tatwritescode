@@ -2,7 +2,6 @@ FROM golang:1.19.3-alpine
 
 WORKDIR /twc-app
 
-COPY ../../internal ./internal
 COPY ../../web/assets ./web/assets
 COPY ../../web/templates ./web/templates
 

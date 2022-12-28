@@ -1,4 +1,4 @@
-package database
+package main
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"twc-app/posts"
 )
 
 func OpenSqlConnection(user string, password string, database string, host string) *sql.DB {
@@ -37,14 +36,14 @@ func GetHashedPassword(db *sql.DB, username string) string {
 	return hashed_password
 }
 
-func GetAllBlogposts(db *sql.DB) []*posts.Blogpost {
+func GetAllBlogposts(db *sql.DB) []*Blogpost {
 	rows, err := db.Query("SELECT * FROM posts")
 	if err != nil {
 		fmt.Printf("some error -> %v\n", err)
 	}
 	defer rows.Close()
 
-	blogPosts := make([]*posts.Blogpost, 0)
+	blog := make([]*Blogpost, 0)
 
 	for rows.Next() {
 		var id int
@@ -57,10 +56,10 @@ func GetAllBlogposts(db *sql.DB) []*posts.Blogpost {
 			fmt.Printf("Some error -> %v\n", err)
 		}
 
-		blogPosts = append(blogPosts, posts.NewBlogpost(id, datetime, title, content))
+		blog = append(blog, NewBlogpost(id, datetime, title, content))
 	}
 
-	return blogPosts
+	return blog
 }
 
 func InsertPost(db *sql.DB, timestamp string, title string, content string) {
@@ -71,19 +70,19 @@ func InsertPost(db *sql.DB, timestamp string, title string, content string) {
 	}
 }
 
-func GetLatestPosts(db *sql.DB) []*posts.Blogpost {
+func GetLatestPosts(db *sql.DB) []*Blogpost {
 	rows, err := db.Query("SELECT * FROM posts ORDER BY datetimestamp DESC LIMIT 5")
 	if err != nil {
 		fmt.Printf("some error -> %v\n", err)
 	}
 	defer rows.Close()
-	blogPosts := populateRows(rows)
+	blog := populateRows(rows)
 
-	return blogPosts
+	return blog
 
 }
 
-func GetPostsFromMonth(db *sql.DB, year string, month string) ([]*posts.Blogpost, error) {
+func GetPostsFromMonth(db *sql.DB, year string, month string) ([]*Blogpost, error) {
 
 	yearInt, err := strconv.Atoi(year)
 	if err != nil {
@@ -112,13 +111,13 @@ func GetPostsFromMonth(db *sql.DB, year string, month string) ([]*posts.Blogpost
 		fmt.Printf("Some error -> %v\n", err)
 	}
 	defer rows.Close()
-	blogPosts := populateRows(rows)
+	blog := populateRows(rows)
 
-	return blogPosts, nil
+	return blog, nil
 }
 
-func populateRows(rows *sql.Rows) []*posts.Blogpost {
-	blogPosts := make([]*posts.Blogpost, 0)
+func populateRows(rows *sql.Rows) []*Blogpost {
+	blog := make([]*Blogpost, 0)
 
 	for rows.Next() {
 		var id int
@@ -131,8 +130,8 @@ func populateRows(rows *sql.Rows) []*posts.Blogpost {
 			fmt.Printf("Some error -> %v\n", err)
 		}
 
-		blogPosts = append(blogPosts, posts.NewBlogpost(id, datetime, title, content))
+		blog = append(blog, NewBlogpost(id, datetime, title, content))
 	}
 
-	return blogPosts
+	return blog
 }

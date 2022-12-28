@@ -1,11 +1,9 @@
-package posts
+package main
 
 import (
 	"fmt"
 	"strconv"
 	"time"
-
-	"twc-app/utilities"
 )
 
 type NavigationLinks struct {
@@ -41,11 +39,11 @@ func GetNavigationLinks(posts []*Blogpost) *NavigationLinks {
 	postMap := GetMmYyyy(posts)
 	yearLinks := make([]*YearLink, len(postMap))
 
-	yearOrder := utilities.SortMapByKeyReverse(postMap)
+	yearOrder := SortMapByKeyReverse(postMap)
 
 	count := 0
 	for _, year := range yearOrder {
-		monthOrder := utilities.SortMapByValueReverse(postMap[year])
+		monthOrder := SortMapByValueReverse(postMap[year])
 		yearLink := &YearLink{
 			Year:       year,
 			MonthOrder: monthOrder,

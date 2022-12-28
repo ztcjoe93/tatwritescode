@@ -2,11 +2,18 @@ module github.com/ztcjoe93/tatwritescode
 
 go 1.19
 
+replace twc-app/database => ./internal/database
+replace twc-app/posts => ./internal/posts
+replace twc-app/utilities => ./internal/utilities
+
 require (
 	github.com/appleboy/gin-jwt/v2 v2.9.1
-	github.com/gin-gonic/gin v1.8.1
+	github.com/gin-gonic/gin v1.8.2
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/joho/godotenv v1.4.0
+	twc-app/database v1.0.0
+	twc-app/posts v1.0.0
+	twc-app/utilities v1.0.0
 )
 
 require (
@@ -16,7 +23,6 @@ require (
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.3 // indirect
-	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
@@ -30,13 +36,4 @@ require (
 	golang.org/x/text v0.5.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	twc-app/database v1.0.0
-	twc-app/posts v1.0.0
-	twc-app/utilities v1.0.0
-)
-
-replace (
-	twc-app/database => ./internal/database
-	twc-app/posts => ./internal/posts
-	twc-app/utilities => ./internal/utilities
 )

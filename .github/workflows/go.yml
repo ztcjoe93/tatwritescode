@@ -18,6 +18,12 @@ jobs:
       with:
         go-version: 1.19.3
 
+    - name: Go mod download + build
+      run: cd cmd/twc-app && go mod download && go build -v ./...
+
+    - name: ls current wd
+      run: pwd
+
     - name: Run tests and coverage
       run: go test -race -coverprofile=coverage.out -covermode=atomic -v ./cmd/twc-app/...
 

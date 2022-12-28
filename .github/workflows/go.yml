@@ -19,7 +19,7 @@ jobs:
         go-version: 1.19.3
 
     - name: Build
-      run: go build -v ./cmd/twc-app/...
+      run: go build -v ./cmd/twc-app/main.go
 
     - name: Run tests and coverage
       run: go test -race -coverprofile=coverage.out -covermode=atomic -v twc-app/...

@@ -7,10 +7,18 @@
             </h2>
             <a class="button" href="/logout">Logout</a>
             <hr>
+            <form enctype="multipart/form-data" action="/admin/upload" method="post" name="file">
+                <h3 class="lead">
+                    Upload image
+                </h3>
+                <input type="file" class="nav-link" name="file">
+                <button class="nav-link">Upload</button>
+            </form>
+            <hr>
             <h3 class="lead">
                 Create new post
             </h3>
-            <form action="" method="post">
+            <form action="/admin/create_post" method="post">
                 <input placeholder="Title" size="80" name="post_title"></input><br>
                 <textarea placeholder="Post content" rows="5" cols="80" name="post_content"></textarea>
                 <button class="nav-link mt-5">Create post</button>

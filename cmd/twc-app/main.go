@@ -69,6 +69,7 @@ func main() {
 	router.LoadHTMLGlob("web/templates/*")
 
 	router.Static("/assets", "web/assets/")
+	router.Static("/uploads", "volume/uploads/")
 
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		SendCookie:     true,
@@ -231,11 +232,17 @@ func main() {
 	auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 	auth.Use(authMiddleware.MiddlewareFunc())
 	auth.GET("/home", AuthHandler)
-	auth.POST("/home", func(c *gin.Context) {
+	auth.POST("/create_post", func(c *gin.Context) {
 		title := c.PostForm("post_title")
 		post := c.PostForm("post_content")
 
 		database.InsertPost(db, time.Now().UTC().Format("2006-01-02 03:04:05"), title, post)
+		c.Redirect(http.StatusFound, "/admin/home")
+	})
+
+	auth.POST("/upload", func(c *gin.Context) {
+		file, _ := c.FormFile("file")
+		c.SaveUploadedFile(file, fmt.Sprintf("volume/uploads/%s", file.Filename))
 		c.Redirect(http.StatusFound, "/admin/home")
 	})
 
@@ -265,7 +272,6 @@ func getBaseURL(c *gin.Context, additionalParams ...bool) string {
 	urlPath := c.Request.URL.Path
 	if len(additionalParams) > 0 {
 		arguments := strings.Split(c.Request.URL.Path, "/")
-		fmt.Printf("%v\n", arguments)
 		urlPath = "/" + arguments[1]
 	}
 

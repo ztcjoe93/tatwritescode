@@ -40,6 +40,11 @@ variable "upload_mount_path" {
   description = "Path to attach EBS for admin uploads"
 }
 
+variable "signature_key" {
+  type        = string
+  description = "Signature key for signing tokens"
+}
+
 variable "ssl_pem" {
   type        = string
   description = "Public key for SSL cert"

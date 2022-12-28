@@ -19,6 +19,8 @@ resource "aws_instance" "ec2_instance" {
     UPLOAD_MOUNT_PATH   = var.upload_mount_path
     SSL_PEM             = var.ssl_pem
     SSL_KEY             = var.ssl_key
+    SIGNATURE_KEY       = var.signature_key
+    env                 = "prod"
   })
   vpc_security_group_ids = [aws_security_group.main_sg.id]
 }

@@ -16,6 +16,7 @@ resource "aws_instance" "ec2_instance" {
     MYSQL_ROOT_PASSWORD = var.database_root_password
     MYSQL_HOST          = var.database_host
     VOLUME_MOUNT_PATH   = var.volume_mount_path
+    UPLOAD_MOUNT_PATH   = var.upload_mount_path
     SSL_PEM             = var.ssl_pem
     SSL_KEY             = var.ssl_key
   })

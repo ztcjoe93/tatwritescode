@@ -20,6 +20,8 @@ services:
     image: ztcjoe93/twc-app
     ports:
       - "8080:8080"
+    volumes:
+      - ${UPLOAD_MOUNT_PATH}:/twc-app/volume/uploads
 
   db:
     image: mysql/mysql-server:latest
@@ -32,7 +34,6 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      VOLUME_MOUNT_PATH: ${VOLUME_MOUNT_PATH}
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
       timeout: 10s

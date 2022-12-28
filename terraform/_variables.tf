@@ -35,6 +35,11 @@ variable "volume_mount_path" {
   description = "Path for database container's volume"
 }
 
+variable "upload_mount_path" {
+  type        = string
+  description = "Path to attach EBS for admin uploads"
+}
+
 variable "ssl_pem" {
   type        = string
   description = "Public key for SSL cert"

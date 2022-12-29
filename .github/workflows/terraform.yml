@@ -43,6 +43,8 @@ jobs:
         upload_mount_path = "${{ secrets.UPLOAD_MOUNT_PATH }}"
         ssl_pem = "${{ secrets.SSL_PEM }}"
         ssl_key = "${{ secrets.SSL_KEY }}"
+        signature_key = "${{ secrets.SIGNATURE_KEY }}"
+        env = "${{ secrets.ENV }}"
         EOF
         terraform init
         terraform validate

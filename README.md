@@ -7,11 +7,15 @@
 This repository serves as a micro-blog and testbed meant for trying out new software and programming paradigms.  
 
 ## Table of Contents
+- [Design](#design)
 - [Setup](#setup)
 - [Infrastructure](#infrastructure)
 - [Running tests](#running-tests)
 - [Structure](#structure)
 - [Current to-dos](#current-to-dos)
+
+## Design
+![](web/assets/design.png)
 
 ## Setup
 
@@ -51,6 +55,8 @@ ssl_key = <<-EOT
 -----END PRIVATE KEY-----
 EOT
 volume_mount_path = <VOLUME_MOUNT_PATH>
+upload_mount_path = <UPLOAD_MOUNT_PATH>
+signature_key = <SIGNATURE_KEY>
 ```
 
 To check what resources are created/destroyed:  
@@ -59,9 +65,14 @@ $ terraform init
 $ terraform plan
 ```
 
-To spin up actual resources in AWS (ensure that you have eitehr AWS credentials stored, or respective secret access key + access key id in env)  
+To spin up actual resources in AWS (ensure that you have either AWS credentials stored, or respective secret access key + access key id in env)  
 ```
-$ terraform apply -y
+$ terraform apply -auto-approve
+```
+
+To destroy resources in AWS  
+```
+$ terraform destroy -auto-approve
 ```
 
 Post-deployment initiliazation script can be found in `/terraform/init.sh`, and output can be found in `/var/log/cloud-init-output.log` in the EC2 instance.
@@ -69,7 +80,7 @@ Post-deployment initiliazation script can be found in `/terraform/init.sh`, and 
 ## Running tests
 To run all tests  
 ```
-$ go test -v twc-app/...
+$ go test -v ./cmd/twc-app/...
 ```
 
 ## Structure
@@ -77,13 +88,11 @@ $ go test -v twc-app/...
 Any assets/templates that's required by the core application
 - `/cmd`
 Main application logic and code
-- `/test`  
-Tests for internal/main module
-- `/terraform`  
+- `/terraform`
 IaC related code
-- `/docker`  
+- `/docker`
 Dockerfiles for each container
-- `.github`  
+- `.github`
 Github workflows here
 
 ## Current to-dos

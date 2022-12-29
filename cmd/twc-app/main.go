@@ -22,7 +22,6 @@ var (
 	headers     gin.H  = gin.H{}
 	identityKey string = "id"
 	db          *sql.DB
-	blogposts   []*Blogpost
 )
 
 func main() {
@@ -44,7 +43,6 @@ func main() {
 	}
 
 	db := OpenSqlConnection(dbUser, dbPassword, dbName, dbHost)
-	blogposts = GetAllBlogposts(db)
 
 	// For Cache-Control: "no-cache" when running on development so that
 	// we don't get a mysterious 'why isn't my assets updating' situation
@@ -194,7 +192,7 @@ func main() {
 
 		c.HTML(http.StatusOK, "blog.tmpl", gin.H{
 			"posts":   latestPosts,
-			"links":   GetNavigationLinks(blogposts),
+			"links":   GetNavigationLinks(GetAllBlogposts(db)),
 			"baseUrl": getBaseURL(c),
 		})
 	})
@@ -207,7 +205,7 @@ func main() {
 
 		c.HTML(http.StatusOK, "blog.tmpl", gin.H{
 			"posts":   specificPosts,
-			"links":   GetNavigationLinks(blogposts),
+			"links":   GetNavigationLinks(GetAllBlogposts(db)),
 			"baseUrl": getBaseURL(c, true),
 		})
 	})
@@ -272,7 +270,12 @@ func getBaseURL(c *gin.Context, additionalParams ...bool) string {
 		urlPath = "/" + arguments[1]
 	}
 
-	return scheme + "://" + c.Request.Host + urlPath
+	host := c.Request.Host
+	if env == "prod" {
+		host = "tatwritescode.com"
+	}
+
+	return scheme + "://" + host + urlPath
 }
 
 func AuthHandler(c *gin.Context) {

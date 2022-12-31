@@ -211,7 +211,7 @@ func main() {
 	})
 
 	router.GET("/resume", func(c *gin.Context) {
-		http.ServeFile(c.Writer, c.Request, "../../web/assets/resume.pdf")
+		http.ServeFile(c.Writer, c.Request, "web/assets/resume.pdf")
 	})
 
 	router.GET("/login", func(c *gin.Context) {
